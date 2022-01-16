@@ -1,5 +1,4 @@
 # MultiThreadedAppInSpringBoot
-Multithreaded String Boot Application
 
 Реализовать с использованием Spring Framework многопоточное Web-приложение, которое позволяет определить, проедет ли автомобиль заданное расстояние на имеющемся количестве топлива и сколько топлива останется после преодоления маршрута.
 
@@ -10,3 +9,12 @@ Multithreaded String Boot Application
 На середине пути скорость автомобиля увеличивается в два раза, тем самым топливо начинает тратиться в два раза быстрее.
 
 На выходе REST-контроллера должен даваться ответ, можно ли с заданным набором данных доехать до конца пути и сколько топлива будет в остатке.
+
+## Method
+ 
+- GET `/check?speed=%f&fuelConsumption=%f&amountOfFuel=%f&distance=%f`
+- Every argument is required and should be non-negative
+
+## Tests
+
+- `MultithreadedAppApplicationTests.java`

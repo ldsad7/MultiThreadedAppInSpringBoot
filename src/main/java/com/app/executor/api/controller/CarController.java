@@ -46,13 +46,23 @@ public class CarController {
      * @return ответ на запрос
      */
     @GetMapping(value = "/check", produces = "application/json")
-    public ResponseEntity<CheckResponseData> checkWhetherTheCarWillGoAllTheWay(@RequestParam @DecimalMin("0.0") double speed, @RequestParam @DecimalMin("0.0") double fuelConsumption, @RequestParam @DecimalMin("0.0") double amountOfFuel, @RequestParam @DecimalMin("0.0") double distance) throws InterruptedException, ExecutionException {
+    public ResponseEntity<CheckResponseData> checkWhetherTheCarWillGoAllTheWay(
+            @RequestParam @DecimalMin("0.0") double speed,
+            @RequestParam @DecimalMin("0.0") double fuelConsumption,
+            @RequestParam @DecimalMin("0.0") double amountOfFuel,
+            @RequestParam @DecimalMin("0.0") double distance) throws InterruptedException, ExecutionException {
         ExecutorService threadPool = Executors.newFixedThreadPool(NUM_OF_THREADS);
         CountDownLatch readyThreadCounter = new CountDownLatch(NUM_OF_THREADS);
         CountDownLatch callingThreadBlocker = new CountDownLatch(1);
         CountDownLatch stopDownLatch = new CountDownLatch(1);
 
-        CarState carState = new CarState().setDistance(distance).setDistanceLeft(distance).setSpeed(speed).setAmountOfFuelLeft(amountOfFuel).setFuelConsumption(fuelConsumption);
+        CarState carState = new CarState()
+                .setDistance(distance)
+                .setDistanceLeft(distance)
+                .setSpeed(speed)
+                .setAmountOfFuelLeft(amountOfFuel)
+                .setFuelConsumption(fuelConsumption)
+                ;
 
         threadPool.submit(new CarService.CarTask(carState, readyThreadCounter, callingThreadBlocker));
         threadPool.submit(new CarService.DistanceTask(carState, readyThreadCounter, callingThreadBlocker, stopDownLatch));
@@ -67,6 +77,12 @@ public class CarController {
         logger.info("At least one watcher thread has stopped, so we shut down another thread");
         threadPool.shutdownNow();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new CheckResponseData().setSuccessful(carService.isSuccessful(carState).get()).setAmountOfFuelLeft(carService.getAmountOfRemainingFuel(carState).get()));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        new CheckResponseData()
+                                .setSuccessful(carService.isSuccessful(carState).get())
+                                .setAmountOfFuelLeft(carService.getAmountOfRemainingFuel(carState).get())
+                );
     }
 }
